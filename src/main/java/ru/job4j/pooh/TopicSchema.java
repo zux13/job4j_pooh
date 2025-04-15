@@ -30,14 +30,19 @@ public class TopicSchema implements Schema {
     public void run() {
         while (!Thread.currentThread().isInterrupted()) {
             for (String topic : messages.keySet()) {
+
                 var msgQueue = messages.get(topic);
                 if (msgQueue == null || msgQueue.isEmpty()) {
                     continue;
                 }
-                List<String> batch = new ArrayList<>();
-                msgQueue.drainTo(batch);
 
                 var receiversByTopic = receivers.get(topic);
+                if (receiversByTopic == null) {
+                    continue;
+                }
+
+                List<String> batch = new ArrayList<>();
+                msgQueue.drainTo(batch);
 
                 for (String message : batch) {
                     for (Receiver receiver : receiversByTopic) {
